@@ -1,4 +1,4 @@
-﻿using Ardalis.SharedKernel;
+﻿ using Ardalis.SharedKernel;
 using CareNavigatorSparrow.Core.ContributorAggregate;
 using CareNavigatorSparrow.UseCases.Contributors.Create;
 using MediatR;
