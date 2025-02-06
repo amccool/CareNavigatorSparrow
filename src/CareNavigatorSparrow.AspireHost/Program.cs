@@ -1,14 +1,15 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
-
+//resources
 var db = builder.AddPostgres("postgres")
-  .WithPgAdmin()// (pgAdmin => pgAdmin.WithHostPort(5050))
+  .WithPgAdmin()
   .AddDatabase("carenavigator");
 
 var kafka = builder.AddKafka("kafka")
   .WithKafkaUI(kafkaUI => kafkaUI.WithHostPort(9100))
   .WithLifetime(ContainerLifetime.Persistent);
 
+//projects
 builder.AddProject<Projects.CareNavigatorSparrow_Web>("web")
   .WithReference(db).WaitFor(db)
   .WithReference(kafka).WaitFor(kafka);

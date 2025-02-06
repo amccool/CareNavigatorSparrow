@@ -2,6 +2,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
+//not a fan of serilog, but it's what we have
 var logger = Log.Logger = new LoggerConfiguration()
   .Enrich.FromLogContext()
   .WriteTo.Console()
