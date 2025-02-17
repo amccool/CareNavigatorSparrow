@@ -12,7 +12,7 @@ public class ListContributorsQueryService(AppDbContext _db) : IListContributorsQ
   {
     // NOTE: This will fail if testing with EF InMemory provider!
     var result = await _db.Database.SqlQuery<ContributorDTO>(
-      $"SELECT Id, Name, PhoneNumber_Number AS PhoneNumber FROM Contributors") // don't fetch other big columns
+      $"SELECT Id, Name, PhoneNumber_Number AS PhoneNumber FROM public.Contributors") // don't fetch other big columns
       .ToListAsync();
 
     return result;

@@ -39,8 +39,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareNavigatorSparrow.Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareNavigatorSparrow.AspireHost", "src\CareNavigatorSparrow.AspireHost\CareNavigatorSparrow.AspireHost.csproj", "{C7039CB5-4F76-4F19-ABD7-C755FAB2A870}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6C901685-21FF-4216-864F-98D00573CBBD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestContainerKafka", "tests\TestContainerKafka\TestContainerKafka.csproj", "{83A4A044-93E9-486C-9C42-1E37179D653A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "producer", "producer", "{E0EC0D7D-BE9A-485A-A368-5EEF62CC03F9}"

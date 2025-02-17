@@ -1,5 +1,6 @@
 ﻿using Ardalis.ListStartupServices;
 using CareNavigatorSparrow.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CareNavigatorSparrow.Web.Configurations;
 
@@ -36,7 +37,12 @@ public static class MiddlewareConfig
     try
     {
       var context = services.GetRequiredService<AppDbContext>();
-      //          context.Database.Migrate();
+
+      var appliedMigration = await context.Database.GetAppliedMigrationsAsync();
+      
+      await context.Database.MigrateAsync();
+      //.Database.MigrateAsync();
+
       context.Database.EnsureCreated();
       await SeedData.InitializeAsync(context);
     }

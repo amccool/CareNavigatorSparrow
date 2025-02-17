@@ -7,7 +7,8 @@ var db = builder.AddPostgres("postgres")
 
 var kafka = builder.AddKafka("kafka")
   .WithKafkaUI(kafkaUI => kafkaUI.WithHostPort(9100))
-  .WithLifetime(ContainerLifetime.Persistent);
+  //.WithLifetime(ContainerLifetime.Persistent); //healcheck topics are occasionally failing
+  .WithLifetime(ContainerLifetime.Session);
 
 //projects
 builder.AddProject<Projects.CareNavigatorSparrow_Web>("web")

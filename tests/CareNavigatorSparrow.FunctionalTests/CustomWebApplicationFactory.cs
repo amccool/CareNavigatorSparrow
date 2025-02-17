@@ -1,9 +1,29 @@
 ﻿using CareNavigatorSparrow.Infrastructure.Data;
+using Aspire.Hosting;
+using Aspire.Hosting.ApplicationModel;
+using Microsoft.Extensions.Configuration;
 
 namespace CareNavigatorSparrow.FunctionalTests;
 
-public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
+//public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class, IAsyncLifetime<CustomWebApplicationFactory<TProgram>>
+public class CustomWebApplicationFactory : WebApplicationFactory<Program> , IAsyncLifetime
 {
+  private readonly IResourceBuilder<PostgresDatabaseResource> _db;
+  private readonly IHost _app;
+  private string? _postgresConnectionString;
+
+  public CustomWebApplicationFactory()
+  {
+    var options = new DistributedApplicationOptions { AssemblyName = typeof(CustomWebApplicationFactory).Assembly.FullName, DisableDashboard = true };
+    var appBuilder = DistributedApplication.CreateBuilder(options);
+
+    _db = appBuilder.AddPostgres("postgres")
+      .AddDatabase("carenavigator");
+
+    _app = appBuilder.Build();
+  }
+
+
   /// <summary>
   /// Overriding CreateHost to avoid creating a separate ServiceProvider per this thread:
   /// https://github.com/dotnet-architecture/eShopOnWeb/issues/465
@@ -13,8 +33,19 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
   protected override IHost CreateHost(IHostBuilder builder)
   {
     builder.UseEnvironment("Development"); // will not send real emails
+
+    builder.ConfigureHostConfiguration(config =>
+    {
+      config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { $"ConnectionStrings:{_db.Resource.Name}", _postgresConnectionString },
+                });
+    });
+
+
+
     var host = builder.Build();
-    host.Start();
+    //host.Start();
 
     // Get service provider.
     var serviceProvider = host.Services;
@@ -27,7 +58,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
       var db = scopedServices.GetRequiredService<AppDbContext>();
 
       var logger = scopedServices
-          .GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
+          .GetRequiredService<ILogger<CustomWebApplicationFactory>>();
 
       // Reset Sqlite database for each test run
       // If using a real database, you'll likely want to remove this step.
@@ -81,5 +112,26 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
           //  options.UseInMemoryDatabase(inMemoryCollectionName);
           //});
         });
+  }
+
+  public new async Task DisposeAsync()
+  {
+    await base.DisposeAsync();
+    await _app.StopAsync();
+    if (_app is IAsyncDisposable asyncDisposable)
+    {
+      await asyncDisposable.DisposeAsync().ConfigureAwait(false);
+    }
+    else
+    {
+      _app.Dispose();
+    }
+  }
+
+  public async Task InitializeAsync()
+  {
+    await _app.StartAsync();
+    _postgresConnectionString = await _db.Resource.ConnectionStringExpression.GetValueAsync(CancellationToken.None);
+      //.GetValueAsync()   .    .GetConnectionStringAsync();
   }
 }

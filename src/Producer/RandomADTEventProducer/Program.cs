@@ -27,9 +27,6 @@ var listOfFakePatient = new Faker<Patient>()
 
 builder.Services.AddSingleton(listOfFakePatient);
 
-
-
-
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 //builder.AddNpgsqlDbContext<TodoDbContext>(connectionName: "apidb-postgres");
