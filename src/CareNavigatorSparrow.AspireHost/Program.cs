@@ -1,20 +1,16 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
-
+//resources
 var db = builder.AddPostgres("postgres")
-  .WithPgAdmin()// (pgAdmin => pgAdmin.WithHostPort(5050))
+  .WithPgAdmin()
   .AddDatabase("carenavigator");
 
 var kafka = builder.AddKafka("kafka")
-  //auto.create.topics.enable=true 
-  //.WithCommand("kafka-topics --create --topic carenavigator --partitions 1 --replication-factor 1 --bootstrap-server localhost:9092")
-  //.WithBuildArg("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
   .WithKafkaUI(kafkaUI => kafkaUI.WithHostPort(9100))
-  //.WithDataBindMount(
-  //  source: @"D:\temp\kafkaData",
-  //  isReadOnly: false)
-  .WithLifetime(ContainerLifetime.Persistent);
+  //.WithLifetime(ContainerLifetime.Persistent); //healcheck topics are occasionally failing
+  .WithLifetime(ContainerLifetime.Session);
 
+//projects
 builder.AddProject<Projects.CareNavigatorSparrow_Web>("web")
   .WithReference(db).WaitFor(db)
   .WithReference(kafka).WaitFor(kafka);

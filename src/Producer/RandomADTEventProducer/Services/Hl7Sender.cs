@@ -79,7 +79,7 @@ internal class Hl7Sender(
     {
       var deliveryResult = await kafkaProducer.ProduceAsync(Topic, new Message<string, string> { Key = uniqueMessageControlId, Value = adtHl7Msg }, cancellationToken: stoppingToken);
       //DeliveryResult is not well defined, we cant use @ to get all its field
-      logger.LogInformation("Delivered message: {Status} {Timestamp} {Partition}", deliveryResult.Status, deliveryResult.Timestamp, deliveryResult.Partition);
+      logger.LogInformation("Delivered message: {Status} UTC:{Timestamp} Partition:{Partition}", deliveryResult.Status, deliveryResult.Timestamp.UtcDateTime, deliveryResult.Partition);
     }
     catch (Exception ex)
     {

@@ -16,7 +16,16 @@ public static class SeedData
 
   public static async Task PopulateTestDataAsync(AppDbContext dbContext)
   {
-    dbContext.Contributors.AddRange([Contributor1, Contributor2]);
+
+    Contributor contrib = new("PG not happy");
+    contrib.Id = 1111;
+    Contributor contribMore = new("PG not happy, still");
+    contrib.Id = 222;
+
+
+    //dbContext.Contributors.AddRange([Contributor1, Contributor2]);
+
+    dbContext.Contributors.AddRange([contrib, contribMore]);
     await dbContext.SaveChangesAsync();
   }
 }
